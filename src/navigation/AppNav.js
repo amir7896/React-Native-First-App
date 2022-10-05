@@ -15,7 +15,7 @@ const Tab = createBottomTabNavigator();
 
 const AuthScreens = () => {
   return (
-    <Stack.Navigator screenOptions={{headerShown: true}}>
+    <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
     </Stack.Navigator>

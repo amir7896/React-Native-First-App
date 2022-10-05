@@ -1,99 +1,143 @@
+import React, {useState, useEffect} from 'react';
 import {
-  StyleSheet,
   View,
-  SafeAreaView,
   Text,
-  TextInput,
-  Button,
-  TouchableOpacity,
+  Image,
+  StyleSheet,
+  useWindowDimensions,
+  ScrollView,
 } from 'react-native';
+import axios from 'axios';
+
+import CustomInput from '../../../components/CustomInput';
+import CustomButton from '../../../components/CustomButton';
+import SocialSignInButtons from '../../../components/SocialSignInButtons';
+import {useForm, Controller} from 'react-hook-form';
+import LoginImage from '../../../assets/Images/login1.jpg';
 import {useNavigation} from '@react-navigation/native';
 
-import React from 'react';
-
 const LoginScreen = () => {
+  const {height} = useWindowDimensions();
   const navigation = useNavigation();
 
+  const [loading, setLoading] = useState(false);
+
+  const {
+    control,
+    handleSubmit,
+    formState: {errors},
+  } = useForm();
+
   // Navigate To Singup Screen ..
-  const singUpNavigate = () => {
+  const onSignUpPress = () => {
     navigation.navigate('Auth', {screen: 'Register'});
   };
-  const [text, onChangeText] = React.useState('Useless Text');
-  const [number, onChangeNumber] = React.useState(null);
+
+  // SignIn Button Press ..
+  const onSignInPressed = async data => {
+    console.log('data ===', data);
+    const {email, password} = data;
+  };
+
+  const greetUser = () => {
+    try {
+      let response = axios
+        .get('http://localhost:5000/api/auth/greet')
+        .then(data => {
+          console.log('api response data ', data);
+        })
+        .catch(err => {
+          console.log('api response error :', err);
+        });
+    } catch (error) {
+      console.log(`Error in greet user :: ${error}`);
+    }
+  };
+
+  // Get Data from backend ...
+  useEffect(() => {
+    greetUser();
+  }, []);
+
+  // Forgot Password Pressed  ..
+  const onForgotPasswordPressed = () => {
+    console.warn('Forgot password pressed');
+
+    //navigation.navigate('ForgotPassword');
+  };
+
   return (
-    <SafeAreaView>
-      <Text style={styles.text}>Login Page</Text>
-      <TextInput style={styles.input} placeholder="Enter Email" name="email" />
-      <TextInput
-        secureTextEntry={true}
-        style={styles.input}
-        placeholder="Enter Password"
-        name="password"
-      />
-      <TouchableOpacity
-        style={styles.loginOpacity}
-        onPress={() => alert('button press')}>
-        <Text style={styles.textButton}>Login</Text>
-      </TouchableOpacity>
-      <View style={styles.registerText}>
-        <Text style={styles.registerText}>OR NOT HAVE AN ACCOUNT ?</Text>
+    <ScrollView showsVerticalScrollIndicator={false}>
+      <View style={styles.root}>
+        <Text style={styles.title}>Login </Text>
+
+        <Image
+          source={LoginImage}
+          style={[styles.logo, {height: height * 0.2}]}
+          resizeMode="contain"
+        />
+
+        <CustomInput
+          name="email"
+          placeholder="Email"
+          control={control}
+          rules={{required: 'Email is required'}}
+        />
+
+        <CustomInput
+          name="password"
+          placeholder="Password"
+          secureTextEntry
+          control={control}
+          rules={{
+            required: 'Password is required',
+            minLength: {
+              value: 3,
+              message: 'Password should be minimum 3 characters long',
+            },
+          }}
+        />
+
+        <CustomButton
+          text={loading ? 'Loading...' : 'Sign In'}
+          onPress={handleSubmit(onSignInPressed)}
+        />
+
+        <CustomButton
+          text="Forgot password?"
+          onPress={onForgotPasswordPressed}
+          type="TERTIARY"
+        />
+
+        <SocialSignInButtons />
+
+        <CustomButton
+          text="Don't have an account? Create one"
+          onPress={onSignUpPress}
+          type="TERTIARY"
+        />
       </View>
-      <TouchableOpacity style={styles.registerOpacity} onPress={singUpNavigate}>
-        <Text style={styles.textButton}>Register</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+    </ScrollView>
   );
 };
 
 export default LoginScreen;
 
 const styles = StyleSheet.create({
-  text: {
-    color: '#355C7D',
+  root: {
+    alignItems: 'center',
+    padding: 20,
+  },
+  title: {
     fontSize: 24,
-    fontWeight: '500',
-    textAlign: 'center',
-    marginTop: 20,
+    fontWeight: 'bold',
+    color: '#051C60',
+    margin: 10,
   },
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-  },
-  textButton: {
-    alignItems: 'center',
-    color: 'white',
-    fontSize: 20,
-    fontWeight: '600',
-  },
-  loginOpacity: {
-    marginVertical: 20,
-    alignItems: 'center',
-    width: 150,
-    height: 40,
-    justifyContent: 'center',
-    backgroundColor: '#344F92',
-    marginHorizontal: 100,
-    borderRadius: 5,
-  },
-  registerOpacity: {
-    marginVertical: 10,
-    alignItems: 'center',
-    width: 150,
-    height: 40,
-    justifyContent: 'center',
-    backgroundColor: '#454B62',
-    marginHorizontal: 100,
-    borderRadius: 5,
-  },
-  registerText: {
-    textAlign: 'center',
-    marginLeft: 40,
-  },
-  registerText: {
-    fontSize: 15,
-    color: '#636363',
+  logo: {
+    width: '100%',
+    maxWidth: 400,
+    maxHeight: 200,
   },
 });
 
