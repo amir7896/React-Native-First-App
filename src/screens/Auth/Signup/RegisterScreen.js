@@ -43,18 +43,8 @@ const RegisterScreen = () => {
 
   // on Signup Button Pressed
   const onRegisterPressed = async data => {
-    console.log('data ===', data);
-    // dispatch(signupUser(data));
-
-    // const response = await fetch('http://localhost:4000/api/auth/register', {
-    //   method: 'POST',
-    //   headers: {
-    //     Accept: 'application/json',
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(data),
-    // });
-    // console.log('response  ===', response);
+    console.log('Form data :::===', data);
+    dispatch(signupUser(data));
   };
 
   useEffect(() => {
@@ -77,7 +67,7 @@ const RegisterScreen = () => {
   }, []);
 
   // All users
-  console.log(allUsers);
+  // console.log(allUsers);
   // On Success and error  ...
   useEffect(() => {
     if (isSuccess) {

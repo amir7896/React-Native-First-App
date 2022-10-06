@@ -1,5 +1,7 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Api} from '../../services/client/rest';
+import {GREET_USER, GET_USERS, SIGNUP_USER} from '../../constants/apiConstant';
 
 // Register User ...
 export const signupUser = createAsyncThunk(
@@ -8,22 +10,12 @@ export const signupUser = createAsyncThunk(
     console.log('hello');
 
     try {
-      const response = await fetch('http://localhost:4000/api/auth/register', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username,
-          email,
-          password,
-        }),
-      });
+      const res = await Api.post(SIGNUP_USER, {username, email, password});
       console.log('fghjk');
+      console.log('Register Response  ===', res.data);
+      let response = res.data;
       let data = await response.json();
-      console.log('data', data);
-
+      console.log('data of response ====', data);
       if (response.status === 200) {
         await AsyncStorage.setItem('token', data.token);
         return {...data, username: username, email: email};
@@ -31,7 +23,7 @@ export const signupUser = createAsyncThunk(
         return thunkAPI.rejectWithValue(data);
       }
     } catch (e) {
-      console.log('Error', e);
+      console.log('Error ======', e);
       //   return thunkAPI.rejectWithValue(e.response.data);
     }
   },
