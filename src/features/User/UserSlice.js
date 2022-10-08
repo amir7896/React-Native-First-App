@@ -1,8 +1,6 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import AuthApi from '../../services/Api/AuthApi';
 
-let user = AuthApi.user();
-
 const initialState = {
   user: {},
   isError: false,
@@ -17,7 +15,6 @@ export const register = createAsyncThunk(
   async (user, thunkAPI) => {
     try {
       const response = await AuthApi.resgisterUser(user);
-      console.log('user ====', response);
       return response;
     } catch (error) {
       const message =

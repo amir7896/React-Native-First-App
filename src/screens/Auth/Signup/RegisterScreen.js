@@ -27,15 +27,14 @@ const RegisterScreen = () => {
   const dispatch = useDispatch();
   const {height} = useWindowDimensions();
 
-  const {user, isLoading, isError, isSuccess, message} = useSelector(
+  const {isLoading, isError, isSuccess, message} = useSelector(
     state => state.auth,
   );
-
-  console.log('User  in register screen =====', user.data);
 
   const {
     control,
     handleSubmit,
+    reset,
     formState: {errors},
   } = useForm();
 
@@ -43,7 +42,7 @@ const RegisterScreen = () => {
 
   useEffect(() => {
     if (isError) {
-      toast.error(message);
+      console.log('error message ===', message);
     }
     if (isSuccess) {
       // navigation.navigate('Root', { screen: 'Profile' });
@@ -52,8 +51,6 @@ const RegisterScreen = () => {
 
     dispatch(rest());
   }, [isError, isSuccess, message, navigation, dispatch]);
-
-  console.log('Form Data Errors  ====', errors);
 
   // on Signup Button Pressed
   const onRegisterPressed = async data => {
@@ -79,7 +76,7 @@ const RegisterScreen = () => {
   return (
     <>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.root}>
+        <View style={styles.root} id="form">
           <Text style={styles.title}>Create an account</Text>
 
           <Image

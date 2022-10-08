@@ -18,37 +18,24 @@ class AuthApi {
 
   // Register User ....
   async resgisterUser(body) {
-    try {
-      const response = await Api.post(SIGNUP_USER, body);
-      console.log('Register User Response  ===', response.data);
-      if (response.data) {
-        await AsyncStorage.setItem('user', JSON.stringify(response.data.data));
-      }
-      return response.data;
-      // const {success, data, message} = response.data;
-      // console.log('all users ===', data);
-      // if (success) {
-      //   return {data, message};
-      // } else {
-      //   return console.log('error');
-      // }
-    } catch (error) {
-      console.log(`User Register Error ===`, error);
+    const response = await Api.post(SIGNUP_USER, body);
+    if (response.data) {
+      await AsyncStorage.setItem('user', JSON.stringify(response.data.data));
     }
+    return response.data;
   }
   // SignIn User ....
   async singInUser(body) {
     try {
       const response = await Api.post(SIGN_IN_USER, body);
-      const {success, data, message} = response.data;
-      console.log('all users ===', data);
-      if (success) {
-        return {data, message};
-      } else {
-        return console.log('error');
+      console.log('login response  ===', response.data.token);
+
+      if (response.data) {
+        await AsyncStorage.setItem('user', JSON.stringify(response.data.data));
       }
+      return response.data;
     } catch (error) {
-      console.log(`Sign In  Error ===`, error);
+      console.log('login error ===', error);
     }
   }
   // Logout user  ...
@@ -59,7 +46,7 @@ class AuthApi {
 
   // Get user from storage  ...
   async user() {
-    await AsyncStorage.getItem('user');
+    return await AsyncStorage.getItem('user');
   }
   // Get all users  ..
   async getAllUsers() {
