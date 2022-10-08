@@ -28,7 +28,7 @@ class AuthApi {
   async singInUser(body) {
     try {
       const response = await Api.post(SIGN_IN_USER, body);
-      console.log('login response  ===', response.data.token);
+      console.log('login response  ===', response.data.token); // login response
 
       if (response.data) {
         await AsyncStorage.setItem('user', JSON.stringify(response.data.data));
