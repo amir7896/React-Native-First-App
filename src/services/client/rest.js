@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const Ip = '192.168.1.68';
+const Ip = '192.168.43.189';
 const Port = '5000';
 
 const deployUrl = 'https://quiet-forest-80163.herokuapp.com/';

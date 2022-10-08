@@ -7,7 +7,6 @@ import {
   useWindowDimensions,
   ScrollView,
 } from 'react-native';
-import axios from 'axios';
 
 import CustomInput from '../../../components/CustomInput';
 import CustomButton from '../../../components/CustomButton';
@@ -15,18 +14,44 @@ import SocialSignInButtons from '../../../components/SocialSignInButtons';
 import {useForm, Controller} from 'react-hook-form';
 import LoginImage from '../../../assets/Images/login1.jpg';
 import {useNavigation} from '@react-navigation/native';
+import {useSelector, useDispatch} from 'react-redux';
+import {login, rest} from '../../../features/User/UserSlice';
 
 const LoginScreen = () => {
   const {height} = useWindowDimensions();
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
+
+  const {isLoading, isError, isSuccess, message} = useSelector(
+    state => state.auth,
+  );
 
   const {
     control,
     handleSubmit,
+    reset,
     formState: {errors},
   } = useForm();
+
+  // useEffect  ..
+
+  useEffect(() => {
+    if (isError) {
+      console.log('error in login  ===', message);
+    }
+    if (isSuccess) {
+      navigation.navigate('StackTab', {screen: 'Home'});
+    }
+
+    dispatch(rest());
+  }, [isError, isSuccess, message, navigation, dispatch]);
+
+  // If Loading ...
+  if (isLoading) {
+    console.log('Loading');
+  }
 
   // Navigate To Singup Screen ..
   const onSignUpPress = () => {
@@ -36,28 +61,8 @@ const LoginScreen = () => {
   // SignIn Button Press ..
   const onSignInPressed = async data => {
     console.log('data ===', data);
-    const {email, password} = data;
+    dispatch(login(data));
   };
-
-  const greetUser = () => {
-    try {
-      let response = axios
-        .get('http://localhost:5000/api/auth/greet')
-        .then(data => {
-          console.log('api response data ', data);
-        })
-        .catch(err => {
-          console.log('api response error :', err);
-        });
-    } catch (error) {
-      console.log(`Error in greet user :: ${error}`);
-    }
-  };
-
-  // Get Data from backend ...
-  useEffect(() => {
-    greetUser();
-  }, []);
 
   // Forgot Password Pressed  ..
   const onForgotPasswordPressed = () => {
