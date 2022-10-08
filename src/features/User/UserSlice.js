@@ -1,120 +1,103 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Api} from '../../services/client/rest';
-import {GREET_USER, GET_USERS, SIGNUP_USER} from '../../constants/apiConstant';
+import AuthApi from '../../services/Api/AuthApi';
 
-// Register User ...
-export const signupUser = createAsyncThunk(
-  'users/signupUser',
-  async ({username, email, password}, thunkAPI) => {
-    console.log('hello');
+let user = AuthApi.user();
 
+const initialState = {
+  user: {},
+  isError: false,
+  isSuccess: false,
+  isLoading: false,
+  message: '',
+};
+
+// Register User Slice ....
+export const register = createAsyncThunk(
+  'aut/register',
+  async (user, thunkAPI) => {
     try {
-      const res = await Api.post(SIGNUP_USER, {username, email, password});
-      console.log('fghjk');
-      console.log('Register Response  ===', res.data);
-      let response = res.data;
-      let data = await response.json();
-      console.log('data of response ====', data);
-      if (response.status === 200) {
-        await AsyncStorage.setItem('token', data.token);
-        return {...data, username: username, email: email};
-      } else {
-        return thunkAPI.rejectWithValue(data);
-      }
-    } catch (e) {
-      console.log('Error ======', e);
-      //   return thunkAPI.rejectWithValue(e.response.data);
+      const response = await AuthApi.resgisterUser(user);
+      console.log('user ====', response);
+      return response;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
     }
   },
 );
 
-//   Login User  ...
-export const loginUser = createAsyncThunk(
-  'users/login',
-  async ({email, password}, thunkAPI) => {
-    try {
-      const response = await fetch('http://localhost:4000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
-      let data = await response.json();
-      console.log('response', data);
-      if (response.status === 200) {
-        await AsyncStorage.setItem('token', data.token);
-        return data;
-      } else {
-        return thunkAPI.rejectWithValue(data);
-      }
-    } catch (e) {
-      console.log('Error', e.response.data);
-      thunkAPI.rejectWithValue(e.response.data);
-    }
-  },
-);
+// Login User Slice  ...
+export const login = createAsyncThunk('auth/login', async (user, thunkAPI) => {
+  try {
+    return AuthApi.singInUser(user);
+  } catch (error) {
+    const message =
+      (error.response && error.response.data && error.response.data.message) ||
+      error.message ||
+      error.toString();
+    return thunkAPI.rejectWithValue(message);
+  }
+});
 
-export const userSlice = createSlice({
-  name: 'user',
-  initialState: {
-    username: '',
-    email: '',
-    isFetching: false,
-    isSuccess: false,
-    isError: false,
-    errorMessage: '',
-  },
+// Logout User Slice  ...
+export const logout = createAsyncThunk('auth/logout', async () => {
+  await AuthApi.logout();
+});
 
+export const authSlice = createSlice({
+  name: 'auth',
+  initialState,
   reducers: {
-    clearState: state => {
-      state.isError = false;
+    rest: state => {
+      state.isLoading = false;
       state.isSuccess = false;
-      state.isFetching = false;
-
-      return state;
+      state.isError = false;
+      state.message = '';
     },
   },
-  extraReducers: {
-    [signupUser.fulfilled]: (state, {payload}) => {
-      console.log('payload', payload);
-      state.isFetching = false;
-      state.isSuccess = true;
-      state.email = payload.email;
-      state.username = payload.username;
-    },
-    [signupUser.pending]: state => {
-      state.isFetching = true;
-    },
-    [signupUser.rejected]: (state, {payload}) => {
-      state.isFetching = false;
-      state.isError = true;
-      state.errorMessage = payload.message;
-    },
-    [loginUser.fulfilled]: (state, {payload}) => {
-      state.email = payload.email;
-      state.username = payload.name;
-      state.isFetching = false;
-      state.isSuccess = true;
-      return state;
-    },
-    [loginUser.rejected]: (state, {payload}) => {
-      console.log('payload', payload);
-      state.isFetching = false;
-      state.isError = true;
-      state.errorMessage = payload.message;
-    },
-    [loginUser.pending]: state => {
-      state.isFetching = true;
-    },
+  extraReducers: builder => {
+    builder
+      // Register Case ...
+      .addCase(register.pending, state => {
+        state.isLoading = true;
+      })
+      .addCase(register.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.user = action.payload;
+      })
+      .addCase(register.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+        state.user = null;
+      })
+
+      // Login Case ...
+      .addCase(login.pending, state => {
+        state.isLoading = true;
+      })
+      .addCase(login.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.user = action.payload;
+      })
+      .addCase(login.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+        state.user = null;
+      })
+      .addCase(logout.fulfilled, state => {
+        state.user = null;
+      });
   },
 });
 
-export const {clearState} = userSlice.actions;
-
-export const userSelector = state => state.user;
+export const {rest} = authSlice.actions;
+export default authSlice.reducer;

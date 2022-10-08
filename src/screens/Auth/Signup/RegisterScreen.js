@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import {useSelector, useDispatch} from 'react-redux';
 import {
   StyleSheet,
   View,
@@ -12,26 +13,25 @@ import CustomInput from '../../../components/CustomInput';
 import CustomButton from '../../../components/CustomButton';
 import SocialSignInButtons from '../../../components/SocialSignInButtons';
 import AuthImage from '../../../assets/Images/auth.jpg';
-import {useSelector, useDispatch} from 'react-redux';
-import AuthApi from '../../../services/Api/AuthApi';
-import {
-  signupUser,
-  userSelector,
-  clearState,
-} from '../../../features/User/UserSlice';
+
+import {register, rest} from '../../../features/User/UserSlice';
 import {useForm} from 'react-hook-form';
 
 const EMAIL_REGEX =
   /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
 const RegisterScreen = () => {
+  // For Navigation  ....
   const navigation = useNavigation();
+  // For Dispatch Actions ...
   const dispatch = useDispatch();
   const {height} = useWindowDimensions();
-  const [allUsers, setAllUsers] = useState();
 
-  const {isFetching, isSuccess, isError, errorMessage} =
-    useSelector(userSelector);
+  const {user, isLoading, isError, isSuccess, message} = useSelector(
+    state => state.auth,
+  );
+
+  console.log('User  in register screen =====', user.data);
 
   const {
     control,
@@ -39,46 +39,30 @@ const RegisterScreen = () => {
     formState: {errors},
   } = useForm();
 
-  console.log(errors);
+  // Use Effect ...
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+    if (isSuccess) {
+      // navigation.navigate('Root', { screen: 'Profile' });
+      navigation.navigate('Auth', {screen: 'Login'});
+    }
+
+    dispatch(rest());
+  }, [isError, isSuccess, message, navigation, dispatch]);
+
+  console.log('Form Data Errors  ====', errors);
 
   // on Signup Button Pressed
   const onRegisterPressed = async data => {
     console.log('Form data :::===', data);
-    dispatch(signupUser(data));
+    dispatch(register(data));
   };
-
-  useEffect(() => {
-    return () => {
-      dispatch(clearState());
-    };
-  }, []);
-
-  // UseEffect Get All users
-
-  const getUsers = async () => {
-    const result = await AuthApi.getAllUsers();
-    setAllUsers(result);
-  };
-
-  // All users useEffect
-
-  useEffect(() => {
-    getUsers();
-  }, []);
-
-  // All users
-  // console.log(allUsers);
-  // On Success and error  ...
-  useEffect(() => {
-    if (isSuccess) {
-      dispatch(clearState());
-      navigation.navigate('StackTab', {screen: 'Home'});
-    }
-    if (isError) {
-      console.warn(errorMessage);
-      dispatch(clearState());
-    }
-  }, [isSuccess, isError]);
+  if (isLoading) {
+    console.log('loading ===');
+  }
 
   const onSignInPress = () => {
     navigation.navigate('Auth', {screen: 'Login'});
