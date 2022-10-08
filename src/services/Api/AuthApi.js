@@ -1,6 +1,11 @@
 import {Api} from '../client/rest';
-import axios from 'axios';
-import {GREET_USER, GET_USERS, SIGNUP_USER} from '../../constants/apiConstant';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import {
+  GET_USERS,
+  SIGNUP_USER,
+  SIGN_IN_USER,
+} from '../../constants/apiConstant';
 
 class AuthApi {
   static sharedInstance = new AuthApi();
@@ -11,20 +16,37 @@ class AuthApi {
     }
   }
 
-  // Register user
+  // Register User ....
   async resgisterUser(body) {
-    try {
-      const response = await Api.post(body);
-      const {success, data, message} = response.data;
-      console.log('all users ===', data);
-      if (success) {
-        return {data, message};
-      } else {
-        return console.log('error');
-      }
-    } catch (error) {
-      console.log(`User Register Error ===`, error);
+    const response = await Api.post(SIGNUP_USER, body);
+    if (response.data) {
+      await AsyncStorage.setItem('user', JSON.stringify(response.data.data));
     }
+    return response.data;
+  }
+  // SignIn User ....
+  async singInUser(body) {
+    try {
+      const response = await Api.post(SIGN_IN_USER, body);
+      console.log('login response  ===', response.data.token); // login response
+
+      if (response.data) {
+        await AsyncStorage.setItem('user', JSON.stringify(response.data.data));
+      }
+      return response.data;
+    } catch (error) {
+      console.log('login error ===', error);
+    }
+  }
+  // Logout user  ...
+
+  async logout() {
+    await AsyncStorage.removeItem('user');
+  }
+
+  // Get user from storage  ...
+  async user() {
+    return await AsyncStorage.getItem('user');
   }
   // Get all users  ..
   async getAllUsers() {
