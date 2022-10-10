@@ -30,7 +30,7 @@ class AuthApi {
       console.log('token ===', token);
       console.log('user  ===', user);
       await LocalStorage.setObject(USER, user);
-      await LocalStorage.setItems(TOKEN, token);
+      await LocalStorage.setObject(TOKEN, token);
       return response.data;
     } catch (error) {
       console.log('login error ===', error);
