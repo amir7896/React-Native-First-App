@@ -1,6 +1,6 @@
 import {Api} from '../client/rest';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import {LocalStorage} from '../../utils/index';
+import {USER, TOKEN} from '../../constants/appConstants';
 import {
   GET_USERS,
   SIGNUP_USER,
@@ -19,20 +19,18 @@ class AuthApi {
   // Register User ....
   async resgisterUser(body) {
     const response = await Api.post(SIGNUP_USER, body);
-    if (response.data) {
-      await AsyncStorage.setItem('user', JSON.stringify(response.data.data));
-    }
     return response.data;
   }
   // SignIn User ....
   async singInUser(body) {
     try {
       const response = await Api.post(SIGN_IN_USER, body);
-      console.log('login response  ===', response.data.token); // login response
-
-      if (response.data) {
-        await AsyncStorage.setItem('user', JSON.stringify(response.data.data));
-      }
+      const token = response.data.token;
+      const user = response.data.User;
+      console.log('token ===', token);
+      console.log('user  ===', user);
+      await LocalStorage.setObject(USER, user);
+      await LocalStorage.setItems(TOKEN, token);
       return response.data;
     } catch (error) {
       console.log('login error ===', error);

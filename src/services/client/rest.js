@@ -6,7 +6,7 @@ const Port = '5000';
 const deployUrl = 'https://quiet-forest-80163.herokuapp.com/';
 
 export const Api = axios.create({
-  baseURL: `http://${Ip}:${Port}/api/`,
-  // baseURL: `${deployUrl}api/`,
+  //baseURL: `http://${Ip}:${Port}/api/`,
+  baseURL: `${deployUrl}api/`,
   headers: {'Content-type': 'application/json'},
 });
