@@ -1,12 +1,11 @@
 import {Button, StyleSheet, Text, View} from 'react-native';
+import {USER, TOKEN} from '../constants/appConstants';
 
 import React from 'react';
-import AuthApi from '../services/Api/AuthApi';
-
-let user = AuthApi.user();
-
+import {LocalStorage} from '../utils';
 const AboutScreen = () => {
-  console.log('user ===', user);
+  // const token = await LocalStorage.get(TOKEN);
+  // console.log('Token is About Screen  ===', token);
   return (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <Text>This is about screen component!</Text>
