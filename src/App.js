@@ -1,4 +1,6 @@
 import React from 'react';
+import Toast from 'react-native-toast-message';
+
 import {Provider} from 'react-redux';
 import {store} from './app/store';
 import AppRoot from './AppRoot';
@@ -10,6 +12,8 @@ const App = () => {
       <Provider store={store}>
         <AppRoot />
       </Provider>
+      {/* Toaster .. */}
+      <Toast />
     </NavigationContainer>
   );
 };

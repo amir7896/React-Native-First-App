@@ -23,18 +23,14 @@ class AuthApi {
   }
   // SignIn User ....
   async singInUser(body) {
-    try {
-      const response = await Api.post(SIGN_IN_USER, body);
+    const response = await Api.post(SIGN_IN_USER, body);
+    if (response.data) {
       const token = response.data.token;
       const user = response.data.User;
-      console.log('token ===', token);
-      console.log('user  ===', user);
       await LocalStorage.setObject(USER, user);
-      await LocalStorage.setObject(TOKEN, token);
-      return response.data;
-    } catch (error) {
-      console.log('login error ===', error);
+      await LocalStorage.set(TOKEN, token);
     }
+    return response.data;
   }
   // Logout user  ...
 

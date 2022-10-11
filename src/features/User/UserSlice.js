@@ -6,6 +6,7 @@ const initialState = {
   isError: false,
   isSuccess: false,
   isLoading: false,
+  isLoggedIn: false,
   message: '',
 };
 
@@ -31,7 +32,8 @@ export const register = createAsyncThunk(
 // Login User Slice  ...
 export const login = createAsyncThunk('auth/login', async (user, thunkAPI) => {
   try {
-    return AuthApi.singInUser(user);
+    const response = await AuthApi.singInUser(user);
+    return response;
   } catch (error) {
     const message =
       (error.response && error.response.data && error.response.data.message) ||
@@ -54,6 +56,7 @@ export const authSlice = createSlice({
       state.isLoading = false;
       state.isSuccess = false;
       state.isError = false;
+      state.isLoggedIn = false;
       state.message = '';
     },
   },
@@ -82,11 +85,13 @@ export const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
+        state.isLoggedIn = true;
         state.user = action.payload;
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
+        state.isLoggedIn = false;
         state.message = action.payload;
         state.user = null;
       })

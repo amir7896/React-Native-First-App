@@ -13,6 +13,7 @@ import CustomInput from '../../../components/CustomInput';
 import CustomButton from '../../../components/CustomButton';
 import SocialSignInButtons from '../../../components/SocialSignInButtons';
 import AuthImage from '../../../assets/Images/auth.jpg';
+import Toast from 'react-native-toast-message';
 
 import {register, rest} from '../../../features/User/UserSlice';
 import {useForm} from 'react-hook-form';
@@ -42,10 +43,19 @@ const RegisterScreen = () => {
 
   useEffect(() => {
     if (isError) {
-      console.log('error message ===', message);
+      Toast.show({
+        type: 'error',
+        text1: message,
+        visibilityTime: 4000,
+      });
     }
     if (isSuccess) {
       // navigation.navigate('Root', { screen: 'Profile' });
+      Toast.show({
+        type: 'success',
+        text1: 'User Register Successfully.',
+        visibilityTime: 4000,
+      });
       navigation.navigate('Auth', {screen: 'Login'});
     }
 

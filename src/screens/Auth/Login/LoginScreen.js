@@ -7,6 +7,7 @@ import {
   useWindowDimensions,
   ScrollView,
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 import CustomInput from '../../../components/CustomInput';
 import CustomButton from '../../../components/CustomButton';
@@ -39,9 +40,19 @@ const LoginScreen = () => {
 
   useEffect(() => {
     if (isError) {
+      Toast.show({
+        type: 'error',
+        text1: message,
+        visibilityTime: 4000,
+      });
       console.log('error in login  ===', message);
     }
     if (isSuccess) {
+      Toast.show({
+        type: 'success',
+        text1: 'Login Successfully.',
+        visibilityTime: 4000,
+      });
       navigation.navigate('StackTab', {screen: 'Home'});
     }
 
