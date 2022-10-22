@@ -5,10 +5,8 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 import HomeScreen from '../screens/HomeScreen';
 import AboutScreen from '../screens/AboutScreen';
-import ProfileScreen from '../screens/ProfileScreen';
 import LoginScreen from '../screens/Auth/Login/LoginScreen';
 import RegisterScreen from '../screens/Auth/Signup/RegisterScreen';
-import Icon from 'react-native-vector-icons/FontAwesome5';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -50,25 +48,6 @@ const TabStack = () => {
         }}
       />
       <Tab.Screen
-        name="About"
-        component={AboutScreen}
-        options={{
-          tabBarIcon: ({focused}) => (
-            <View style={{alignItems: 'center', justifyContent: 'center'}}>
-              <Image
-                source={require('../assets/icons/user.png')}
-                resizeMode="contain"
-                style={{
-                  width: 40,
-                  height: 50,
-                  borderRadius: 20,
-                }}
-              />
-            </View>
-          ),
-        }}
-      />
-      <Tab.Screen
         name="Login"
         component={LoginScreen}
         options={{
@@ -88,18 +67,17 @@ const TabStack = () => {
         }}
       />
       <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
+        name="About"
+        component={AboutScreen}
         options={{
-          tabBarLabel: 'Profile',
           tabBarIcon: ({focused}) => (
             <View style={{alignItems: 'center', justifyContent: 'center'}}>
               <Image
-                source={require('../assets/icons/profile.png')}
+                source={require('../assets/icons/user.png')}
                 resizeMode="contain"
                 style={{
                   width: 40,
-                  height: 30,
+                  height: 50,
                   borderRadius: 20,
                 }}
               />
