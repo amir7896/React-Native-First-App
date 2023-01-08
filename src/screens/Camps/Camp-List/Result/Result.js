@@ -1,4 +1,5 @@
 import {StyleSheet, Text, View} from 'react-native';
+import PagerView from 'react-native-pager-view';
 import React from 'react';
 
 const Result = ({totalRecordCount, camps}) => {
@@ -12,4 +13,8 @@ const Result = ({totalRecordCount, camps}) => {
 
 export default Result;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  pagerView: {
+    flex: 1,
+  },
+});
